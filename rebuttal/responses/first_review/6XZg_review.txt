@@ -1,0 +1,36 @@
+Summary:
+The paper introduces naPINN, a PINN modification for dealing with noisy data for recovering physics from corrupt measurements. The method is benchmarked on Allen-Canh, Burgers and lambda-omega reaction diffusion PDEs. While in principle some arguments in the paper have certain validity, the evaluation of the proposed method against other methods poses certain questions in terms of clarity and fairness.
+
+Contribution Type: General: Most submissions will fall into this type.
+Strengths And Weaknesses:
+Here are my comments:
+
+Strength of the submission:
+
+there is indeed often happening a mismatch between the sensor-based measurements and the assumption on the Gaussian noise which can cause challenges in deployment of the inverse problems to real case studies.
+the methodology provides sufficient statistical grounding to believe the implementation
+quantitative results and anomaly detection show strong favor to the algorithm, however, while in the comparison matrix naPIN is definitely favorable to other PINNs, the implementation and reasoning for making certain assumptions is where the main weaknesses of this submission lie.
+Hence the weaknesses of the submission are:
+
+BPINN used for comparison of the results seems to be different from the set-up proposed by Yang et al. in the original BPINN publication. Where in the core BPINN a more superior HMC posterior sampling is used to calibrate the model in the implementation proposed by authors of this submission we see a factorized Gaussian weighted posterior, which to say is in full fairness is a weaker model. Hence if there exists a more superior BPINN implementation it would be more fair to compare results to that one, instead of using a weaker version which would inevitably show worse performance compared to naPINN.
+The claim regarding uncertainty quantification in "2 Related work" in the paragraph of "Robust learning..." needs to be reasoned better. As of now it is unclear to the reader what the authors are trying to justify. Yes measurement selection is not the same as using a statistical method to eliminate effects of the noise and outliers, but essentially they do serve the same purpose. Beyesian methods have been widely used for many years to reduce the effect of noise and anomalies from data (including experimental data) when making predictions. If you want to suggest that methods are ineffective, you need to provide more concrete reasoning and grounding for the claim.
+at the same time when looking closely to naPINN it appears to be formed on the Bayesian latent-variable model itself, hence the fact that paper is claiming contrasting differences with the Bayesian UQ framework is somewhat over-exaggerated. Essentially naPINN and BPINN are mostly differ in the approximation method and likelihood choice.
+when comparing to PINN it is unfair not to remove baseline outliers, normal practice in data science and PINN applications when working with noisy measurements would include basic staistical data pre-prosessing, which would remove some points that for example exceed z-score limit etc. a more fair baseline would be required here to show effectiveness of the method.
+things like model stability and hyperparameter optimization need to be discussed here in better detail.
+noise distribution seems to be the same everywhere, would be good to include different noise benchmarks.
+not clear regarding the trianing costs - seems to be an important information to discuss in main body.
+please check the references carefully, reference 3 has wrong publication year, likely there are other inconsistencies.
+All in all the proposed benchmarking is somewhat weakly presented to justify the claims authors provide.
+
+Quality: 2: not good
+Clarity: 3: good
+Significance: 3: good
+Originality: 2: not good
+Questions:
+Main suggestion is to have a more detailed benchkmarking and design a fair comparison with other methods. Not sure if naPINN presents enough differences not to just be a subset of BPINN
+
+Limitations:
+no, authors need to carefully revise the experiment design and benchmarking strategy.
+
+Rating: 2: Reject: For instance, a paper with technical flaws, weak evaluation, inadequate reproducibility and incompletely addressed ethical considerations.
+Confidence: 4: You are confident in your assessment, but not absolutely certain. It is unlikely, but not impossible, that you did not understand some parts of the submission or that you are unfamiliar with some pieces of related work.

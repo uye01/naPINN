@@ -1,0 +1,9 @@
+**W4, on the second table.** Thank you for reading it that closely; the header did not give the denominators. The three columns are fractions of three different totals -- all rows, the corrupted rows only, and the clean rows only -- so they are not parts of one whole and do not sum to 100%. In counts: Allen-Cahn has 22,500 measurement rows, 3,375 corrupted and 19,125 clean, and the global z-score screen removes 3,020 of them, being 1,827 corrupted (1,827 / 3,375 = 54.1%) and 1,193 clean (1,193 / 19,125 = 6.24%), with 3,020 / 22,500 = 13.4%. The identity is removed = 0.15 x 54.1% + 0.85 x 6.24% = 13.4%, and it closes for every cell. The table with the denominators stated:
+
+| Screen | Rows removed, of all rows | Corrupted rows removed, of the 15% | Clean rows removed, of the 85% |
+| --- | ---: | ---: | ---: |
+| global z-score | 13.4 / 17.9 / 9.6% | 54.1 / 81.9 / 63.5% | 6.24 / 6.59 / 0.02% |
+| global MAD | 13.3 / 14.8 / 12.8% | 60.0 / 84.5 / 82.9% | 5.04 / 2.44 / 0.35% |
+| neighbourhood median | 14.5 / 14.8 / 14.8% | 90.1 / 98.3 / 98.0% | 1.11 / 0.02 / 0.04% |
+
+**The procedure.** Score every training measurement, flag a row if any component exceeds k, drop the flagged rows, then train an ordinary MSE-PINN on what remains for the same 30,000 updates, with no gate and no density estimator. The three scores are |y - mean| / sd; |y - median| / (1.4826 x MAD), the robust analogue, since the standard deviation is itself inflated by the outliers being screened; and |y - m| / (1.4826 x MAD of those residuals), where m is the median of the 16 nearest neighbours of that measurement in (x, y, t). k was chosen once on a separate calibration seed by detection F1 against the known corruption labels, then frozen for the reported seeds. We will include the screen code in the appendix.

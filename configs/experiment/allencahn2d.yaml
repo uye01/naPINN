@@ -1,10 +1,12 @@
 # scripts/mlp/allencahn2d.sh
 # scripts/mlp/z_allencahn2d_fore.sh
+# scripts/bpinn/allencahn2d.sh
+# scripts/bpinn/z_allencahn2d_fore.sh
 
-tag: c_NoPhase_4 # c5_va_rewind # na / va / L1 / qG2 / qG3
-device: "cuda:4"
-wandb_project: naPINN_ablation
-exp_description: 4G noise, outlier scale (3-10), base scale 0.1, 5% outliers, fixed_grid measurement
+tag: thres_train_a0 # c5_va_rewind # na / va / L1 / qG2 / qG3
+device: "cuda:0"
+wandb_project: naPINN_rebuttal
+exp_description: "Ablation: learnable threshold without EBM or density estimation"
 
 domain:
   x: [0.0, 2.0]
@@ -32,12 +34,11 @@ batch:
 noise:
   enabled: true
   batch_size: 1000
-  kind: 4G # G, Goff, sG, u, 3G, 3G0, mix0, Gmix, rmix, sGtest
+  kind: 4G # G, 4G, Laplace, StudentT
   scale: 0.1 # default: 0.1
   pars: [0.0, 4.0]
   par_list: [[-9.0, 2],[-0.3,4],[2.7,0.6],[8.5,1]]
   # par_list: [[-8.0, 2],[0.7,4],[3.7,0.6],[9.5,1]] # 4G
-  # par_list: [[-2.0,4],[2.0,8],[6.0,2]] # 3G
 
   sensor_mode: fixed_grid # random / fixed_random / fixed_grid
   n_train: 5000 # only for random
@@ -48,24 +49,25 @@ noise:
   extra_noise:
     enabled: true
     kind: std # 'std' or 'mean_level'
-    n_points: 3375 # 1120 / 2250 / 3375
+    n_points: 1120 # 1120 / 2250 / 3375
     scale_min: 3.0
     scale_max: 10.0
 
 # phase
 phase:
-  enabled: false # true / false
+  enabled: true # true / false
   phase1_epochs: 5000
   phase2_epochs: 25000
 
 ebm:
-  enabled: true
+  enabled: false
+  density_estimator: ebm # "ebm" | "gmm" | "kde"
+  std_mode: ema          # "ema" (running EMA std) | "batch" (per-batch std)
+  momentum: 0.05         # EMA momentum (only used when std_mode: ema)
   hidden_dim: 32
   depth: 4
   num_grid: 1024
-  max_range_factor: 2.5
   lr: 1.0e-3
-  use_nll: false
   init_train_epochs: 5000
 
 data_loss:
@@ -76,16 +78,10 @@ data_loss:
 
 data_loss_balancer:
   use_loss_balancer: true # true / false
-  kind: gated_trainable # pw, inverse, mlp, gated, gated_trainable
-  rejection_cost: 1.0 # only for gated_trainable
-  weight_net:
-    hidden_dim: 32
-    depth: 3
-
-offset:
-  enabled: false
-  init: 0.0
-
+  kind: threshold # gated_trainable, quantile, threshold
+  init_threshold: 1.0        # Initial tau (in units of scaled residual std)
+  init_steepness: 10.0       # Initial sigmoid steepness
+  rejection_cost: 0.5 # only for gated_trainable
 # video
 video:
   enabled: true

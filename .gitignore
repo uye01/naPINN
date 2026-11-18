@@ -1,4 +1,6 @@
-outputs/
+/analysis/results/runs/
+/outputs/*
+!/outputs/README.md
 .env
 wandb/
 .ipynb
@@ -9,4 +11,6 @@ __pycache__/
 .npz
 simulation_result/
 figures/
-plot_*.py
+workshop_paper/
+paper/
+.codex/

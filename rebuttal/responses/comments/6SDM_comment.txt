@@ -1,0 +1,30 @@
+Both sensitivity runs we promised are complete, and one does not favour us.
+
+**Gate initialisation.** One factor at a time, Allen-Cahn at 15%, seeds 40-42
+(mean rMAE):
+
+| Setting | mean rMAE +- s.d. | per seed |
+| --- | ---: | --- |
+| cutoff 2.0, steepness 30 (as used) | 0.092 +- 0.004 | 0.089 / 0.091 / 0.096 |
+| cutoff 1.0 | 0.100 +- 0.027 | 0.074 / 0.098 / 0.128 |
+| cutoff 4.0 | 0.128 +- 0.045 | 0.084 / 0.125 / 0.173 |
+| steepness 10 | **0.083** | -- |
+| steepness 60 | 0.197 +- 0.184 | 0.087 / 0.095 / 0.410 |
+
+We give the per-seed values because the means alone would mislead here. Only the
+sharpest setting has a materially worse mean, and that mean comes from a single
+diverged run: two of its three seeds land at 0.087 and 0.095, indistinguishable
+from the shipped setting, and one reaches 0.410. So the honest reading is not
+that a sharp gate is systematically less accurate but that it carries a risk of
+training failure, which three seeds can only detect and not quantify. The
+cutoff rows show the same pattern more mildly.
+
+The shipped value was never chosen: it is the constructor default, swept here
+for the first time. We will report the sweep with per-seed values and more
+repeats, and state the initialisation explicitly.
+
+**Staged training at a matched budget.** Removing the warm-up and giving the
+joint stage all 30,000 updates gives 0.090 / 0.081 / 0.077 on Allen-Cahn /
+Burgers / lambda-omega against 0.092 / 0.082 / 0.071 with it. Two of three are
+marginally better without, so at a matched budget the warm-up is not doing the
+work our ablation attributed to it, and we will restate that claim.

@@ -1,0 +1,10 @@
+tag: "napinn"
+method:
+  kind: napinn
+  description: "naPINN-MSE: staged EBM gate with MSE reconstruction and rejection cost"
+data_loss:
+  kind: mse
+estimator:
+  enabled: true
+gate:
+  enabled: true

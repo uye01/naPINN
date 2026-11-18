@@ -1,0 +1,53 @@
+We ran the requested real-data evaluation and responded to the reviewers.
+
+**1. A real measurement problem**
+
+Real time-resolved PIV from RealPDEBench Cylinder: 200 frames, 192 fixed irregular training sensors, and 1,549,400 held-out vectors at disjoint locations. Only training sensors are corrupted, so evaluation is against an independent real measurement, using our submitted code's corruption generator at its default, predeclared intensity. Seeds 40-42:
+
+| Method | 10% rMAE | 10% rMSE | 15% rMAE | 15% rMSE |
+| --- | ---: | ---: | ---: | ---: |
+| PINN (MSE) | 0.40576 | 0.42918 | 0.57380 | 0.59140 |
+| LAD-PINN | 0.24617 | 0.27780 | 0.26997 | 0.30028 |
+| OrPINN q=2.9 | 0.21426 | 0.25026 | 0.23106 | 0.26514 |
+| naPINN | **0.15517** | **0.21532** | **0.16023** | **0.22266** |
+
+naPINN is lowest on both metrics at both severities, on each seed. Its gate excludes 98.99% / 99.23% of the gross components against 2.95% / 4.23% of background-only ones.
+
+A predeclared 144-run matrix over Controlled Cylinder, FSI and Foil gives naPINN the lowest mean rMAE in all six conditions and the lowest mean rMSE in four; OrPINN q=2.9 is lower in FSI rMSE. Five structured corruption families -- persistent drift at 10/20/30%, AR(1) correlation, spatial burst failure -- put naPINN lowest on both metrics in four of five, with a plain LAD loss better at the mildest drift level.
+
+**2. Observation error together with physics-model discrepancy**
+
+Applying a nominal 2-D incompressible Navier-Stokes residual to real PIV is the scenario you described: the model is wrong at some level and any residual-based error model must absorb it. Learning the Reynolds number jointly with the field on the 30%-drift condition (initialised at 8000; dataset metadata value 10031):
+
+| Method | learned Re | mean rel. error | field rMAE |
+| --- | ---: | ---: | ---: |
+| MSE | 1332 | 86.7% | 0.372 |
+| LAD | 3634 | 63.8% | 0.233 |
+| PINN-EBM | 7681 | 23.4% | 0.286 |
+| naPINN | **7910** | **21.4%** | **0.228** |
+
+naPINN is best on both, and the ordering separates the two families: the methods that learn a residual density land within a quarter of the true Reynolds number. We do not claim to have recovered the constant: 21.4% is a large error on a physical quantity, and what is identified is an effective coefficient of the observation-plus-model pair.
+
+**3. Pilar and Wahlstrom [31]**
+
+You are right that [31] is the closest prior and that citing it only as motivation was inadequate.
+
+Why it was not in the original comparison: [31] assumes measurement noise with no gross outliers to reject, so its setting differs from ours and we judged a head-to-head potentially unfair to it. We reconsidered, and ran it on every condition here with its PDE-loss weight swept (1 / 10 / 50), so this is a fair implementation rather than a strawman:
+
+| PDE, 15% corruption | PINN-EBM rMAE | naPINN rMAE |
+| --- | ---: | ---: |
+| Allen-Cahn | 0.153 | **0.134** |
+| Burgers | 0.077 | **0.072** |
+| lambda-omega | 0.082 | **0.076** |
+
+naPINN is lower on all three but only by modest margins, so [31] is a competitive method.
+
+What distinguishes naPINN is how the estimate is used. [31] trains the PINN through the EBM's negative log-likelihood, so the learned density defines the data-fitting objective; naPINN keeps a conventional per-measurement reconstruction loss and fits the density on detached residuals, so it reweights the loss rather than replacing it and never back-propagates into the PINN. Because the estimator only emits a scalar reliability score it is a replaceable component -- KDE and GMM drop into the same pipeline and sometimes match or exceed the EBM -- and the gate emits an inclusion weight per observation, an auditable decision rather than a score.
+
+On the real PIV above the gap opens up: at 15% gross rows PINN-EBM reaches rMAE 0.42417 at PDE weight 1 and 0.33611 at weight 50, against 0.16023 for naPINN. The same ordering holds at 10%.
+
+We read this as a difference in regime, not a ranking. Where the equation is exact, optimising a learned residual likelihood directly is highly competitive. On real PIV the density must absorb model discrepancy as well as sensor error, and the gap opens in favour of methods that only decide whether to use a measurement. Since we cannot separate the two discrepancies this is an empirical association, not a causal mechanism. We will restructure the introduction and related work with [31] as the closest prior.
+
+**4. The reviewer discussion**
+
+The threads carry the rest, including the sensitivity studies and the gate-isolating ablation the reviewers asked for. We withdrew three claims there -- the Related Work contrast with Bayesian UQ, "robust" for the EMA sweep, and the warm-up ablation -- and 6XZg was right that we had not tested pre-processing as practitioners do it: the strongest of three screens we ran matches or beats naPINN on two of three synthetic benchmarks. We could not converge an HMC B-PINN within the period and make no claim against one.
