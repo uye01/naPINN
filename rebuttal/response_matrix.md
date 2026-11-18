@@ -53,8 +53,15 @@ Status vocabulary:
    error and model discrepancy are not separately identifiable here. The prior
    constraints still hold: do not say PINN-EBM failed, do not omit adverse
    cells, and do not claim general superiority over Pilar--Wahlström.
-6. Describe the submitted Bayesian baseline as B-PINN-VI, not HMC. A rushed
+6. Describe the submitted Bayesian baseline as a mean-field variational method,
+   not HMC, and do not use the name B-PINN-VI in reviewer text. A rushed
    full-network HMC reimplementation is outside defensible rebuttal evidence.
+   **Reaffirmed on 2026-07-28:** an HMC campaign was implemented and queued,
+   then cancelled before any run, because the concession alone removes the
+   fairness objection while an HMC figure helps only if the sampler converges
+   cleanly *and* still loses. The response cites the observed step-size
+   collapse (about 1e-8 on a 26k-parameter posterior) as the reason for making
+   no claim relative to HMC B-PINN.
 
 ## Reviewer-to-evidence tracker
 
@@ -299,6 +306,41 @@ can read each other's responses:
   winner on lambda--omega, contradicting the 0.082 now reported elsewhere for
   the same condition. PINN-EBM was removed from that table, which 6XZg did not
   ask about, and naPINN-MSE is named the winner there.
+
+### Fourth lineage correction: structured real-PIV results
+
+The author supplied corrected structured-PIV results and, after the discrepancy
+below was raised, confirmed them as authoritative. The responses now use:
+
+| Condition | naPINN rMAE / rMSE | LAD rMAE / rMSE |
+| --- | --- | --- |
+| AR(1) temporal | **0.123 / 0.197** | 0.150 / 0.215 |
+| Spatial burst failure | **0.113 / 0.185** | 0.153 / 0.226 |
+| Persistent drift 10% | 0.155 / 0.233 | **0.132 / 0.208** |
+| Persistent drift 20% | **0.171 / 0.253** | 0.172 / 0.253 |
+| Persistent drift 30% | **0.218 / 0.309** | 0.234 / 0.359 |
+
+**Recorded discrepancy.** For AR(1) and spatial burst these values are the
+naPINN/LAD labels of
+`outputs/rebuttal/realpde_recovery_20260726/injected_piv_aggregation_strict.json`
+exchanged: that aggregate assigns 0.12291/0.19727 and 0.11321/0.18545 to LAD
+and 0.15036/0.21544 and 0.15318/0.22605 to naPINN. The run directories behind
+those numbers are `lad_ar1` and `lad_spatial_burst`, whose resolved config is
+`data_loss.kind = l1` with no gate metrics recorded, versus
+`napinn_rejection_01_*` with `kind = mse` and gate metrics present. The three
+drift rows match the aggregate exactly and were not changed. The author states
+these come from separate runs; those runs are not in this checkout, so the
+aggregate here still reads the other way and must not be quietly re-labelled to
+match. Recover the source runs before camera-ready.
+
+The author confirmed the OrPINN cells are unchanged, so with the corrected
+naPINN and LAD values the runner-up on AR(1) and spatial burst is OrPINN
+(0.146/0.211 and 0.125/0.188), not LAD. The response table reports second best
+accordingly: OrPINN on those two conditions, naPINN at 10% drift, LAD at 20%
+and 30%.
+
+All four responses were updated together: `ac.md`, `aoJS.md` and `6XZg.md`
+previously said a plain LAD loss won three of the five structured conditions.
 
 ### Third lineage correction: PDE parameter recovery
 

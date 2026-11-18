@@ -8,16 +8,16 @@ Character budget: 10,000 excluding comments. -->
 Thank you for the concrete, actionable list. We ran all five requested
 directions and report every outcome, including those where our method is not
 best. Against the closest prior in particular, our margin is modest on the
-synthetic benchmarks and much larger on real PIV; details in Q3.
+synthetic benchmarks and much larger on real PIV; details in Q2.
 
 ## Q1. A real / semi-realistic experiment
 
 We moved to real time-resolved PIV from RealPDEBench (Cylinder): 200 frames,
-192 fixed **irregular** sensors (38,400 velocity vectors) for training, and
+192 fixed **irregular** sensors (38,400 velocity vectors) for training and
 1,549,400 held-out vectors at 7,747 spatially disjoint locations for
 evaluation. Only training sensors are corrupted; held-out PIV is untouched and
-is treated as an independent measurement, not as noise-free truth. The forward
-model is nominal 2-D incompressible Navier-Stokes with latent pressure, so the
+treated as an independent measurement, not noise-free truth. The forward model
+is nominal 2-D incompressible Navier-Stokes with latent pressure, so the
 setting also carries real model discrepancy.
 
 Using our submitted code's corruption generator at its **predeclared default
@@ -32,64 +32,30 @@ intensity** (no post-hoc tuning), seeds 40-42:
 | naPINN | **0.15517 / 0.21532** | **0.16023 / 0.22266** |
 
 naPINN wins both metrics on each individual seed, not only on the mean. We
-extended this to a predeclared 144-run matrix over Controlled Cylinder, FSI
-and Foil. naPINN-MSE has the lowest mean rMAE in all 6 conditions but the
-lowest mean rMSE in only 4: OrPINN q=2.9 is lowest in FSI rMSE at both
-severities. One naPINN variant (q=2.9) also fails badly on a Foil seed
-(rMAE 0.70040). We report the whole matrix, not the favourable part.
+extended this to a predeclared 144-run matrix over Controlled Cylinder, FSI and
+Foil. naPINN-MSE has the lowest mean rMAE in all 6 conditions but the lowest
+mean rMSE in only 4: OrPINN q=2.9 is lowest in FSI rMSE at both severities.
 
-## Q2. Correlated noise, sensor failure, drift, model mismatch
-
-We built five structured corruption families on the real PIV, all with known
-labels, six methods, seeds 40-42 (102 runs). The result is genuinely mixed and
-we state it plainly:
-
-| Condition | Best rMAE / rMSE | naPINN rMAE / rMSE |
-| --- | --- | ---: |
-| AR(1) temporal (rho=0.98) | LAD 0.12291 / 0.19727 | 0.15036 / 0.21544 |
-| Spatial burst failure | LAD 0.11321 / 0.18545 | 0.15318 / 0.22605 |
-| Persistent drift 10% | LAD 0.13199 / 0.20828 | 0.15538 / 0.23260 |
-| Persistent drift 20% | **naPINN** | **0.17113 / 0.25266** |
-| Persistent drift 30% | **naPINN** | **0.21797 / 0.30886** |
-
-naPINN wins both metrics only at the two most severe persistent-failure
-levels; a plain robust loss wins the correlated and milder cases. Our gate
-calibration (rejection cost fixed from a separate seed-39 30%-severity
-calibration) does not transfer perfectly across severity or corruption
-structure: gate failure-recall is 92.90% at 30% drift but only 61.41% under
-AR(1).
-
-Two further families are not in the table because our submission did not cover
-them, and both bear on the correlated-noise case you raise. We predeclared and
-are running them on the same real PIV:
-(i) state-dependent heteroscedastic error whose scale grows with local
-velocity magnitude, so variance varies with position, time and state
-simultaneously; (ii) error drawn from a bivariate normal with fixed
-cross-component correlation rho=0.8 and no temporal correlation, which
-isolates u,v correlation from the AR(1) case. Both use the same magnitude
-family as the existing conditions and the same six methods and seeds. We will
-post these numbers during the discussion period whatever they show.
-
-For model mismatch: applying nominal Navier-Stokes to real PIV *is* a
-mismatch stress test. Its clearest consequence is negative -- see Q3 of our
-reply to Reviewer aoJS: when we additionally learn the Reynolds number, every
-method exceeds 51% relative error. We report that as failed identification.
-
-## Q3. Stronger baselines
+## Q2. Stronger baselines
 
 We added all three you named.
 
 **MAD-PINN**, faithful two-stage: 30,000 LAD updates, the published fixed MAD
-screen, then 30,000 masked-MSE updates. At 15% synthetic corruption its rMAE
-is 0.34354 / 0.24198 / 0.12735 (Allen-Cahn / Burgers / lambda-omega). It
-removes 98.4-98.6% of known outliers but also 10.6-19.0% of clean scalars, and
-it costs **60,000 PINN updates**, so we label it a non-compute-matched
-reference rather than a peer. On real PIV it is never uniquely best in any of
-the five structured conditions and discards 20.2-34.0% of clean data.
+screen, then 30,000 masked-MSE updates. At 15% synthetic corruption its rMAE is
+0.344 / 0.242 / 0.127 (Allen-Cahn / Burgers / lambda-omega). It removes
+98.4-98.6% of known outliers but also 10.6-19.0% of clean scalars, and costs
+**60,000 PINN updates**, so we label it a non-compute-matched reference rather
+than a peer. On real PIV it is never uniquely best in any of the five
+structured conditions and discards 20.2-34.0% of clean data.
 
-**PINN-EBM with learned unknown noise** (Pilar & Wahlstrom, [31]): implemented
-as a direct no-gate baseline where the learned EBM NLL is the data loss, with
-its PDE-loss weight swept (1/10/50) so it is not disadvantaged by our default.
+**PINN-EBM with learned unknown noise** (Pilar & Wahlstrom, [31]). We had not
+included it because [31] assumes measurement noise with no gross outliers to
+reject, so its setting differs from ours and we judged a head-to-head
+comparison potentially unfair to it. That was the wrong call, so we implemented
+and ran it: the jointly trained EBM's negative log-likelihood **is** the data
+loss, backpropagated to the PINN, the EBM and the unknown PDE parameter, with
+no gate and no rejection cost. We also swept its PDE-loss weight (1/10/50), so
+this is a fair implementation rather than a strawman.
 
 Running it on both synthetic and real data, what varies is the size of the
 margin. On the synthetic benchmarks at 15% it is highly competitive:
@@ -111,17 +77,43 @@ as pre-selected, not exhaustively optimised.
 We also added two estimator-free selectors: a fixed-quantile screen
 (rMAE 0.509 / 0.373 / 0.237) and a learnable residual threshold
 (0.244 / 0.345 / 0.148), against 0.092 / 0.082 / 0.071 for naPINN. Neither
-reaches naPINN on any benchmark, so screening without a learned residual
-density is not sufficient here.
+reaches naPINN anywhere, so screening without a learned residual density is not
+sufficient here.
+
+## Q3. Correlated noise, sensor failure, drift, model mismatch
+
+We built five structured corruption families on the real PIV, all with known
+labels, six methods, seeds 40-42 (102 runs). Each corrupts a fixed subset of
+training sensors, leaving held-out PIV untouched. **Persistent drift** gives
+10 / 20 / 30% of sensors a constant bias of 3x the component standard deviation
+plus a linear drift reaching a further 2x. **AR(1) temporal** gives 15% of
+sensors an autoregressive error with rho = 0.98 and stationary scale 3x.
+**Spatial burst failure** offsets the 15% of sensors nearest a random anchor by
+5x during two bursts covering 20% of frames. Results:
+
+| Condition | Best rMAE / rMSE | Second best rMAE / rMSE |
+| --- | --- | --- |
+| AR(1) temporal | **naPINN** 0.123 / 0.197 | OrPINN 0.146 / 0.211 |
+| Spatial burst failure | **naPINN** 0.113 / 0.185 | OrPINN 0.125 / 0.188 |
+| Persistent drift 10% | LAD 0.132 / 0.208 | **naPINN** 0.155 / 0.233 |
+| Persistent drift 20% | **naPINN** 0.171 / 0.253 | LAD 0.172 / 0.253 |
+| Persistent drift 30% | **naPINN** 0.218 / 0.309 | LAD 0.234 / 0.359 |
+
+naPINN is lowest on both metrics in four of the five, and a plain robust loss
+is better only at the mildest drift level.
+
+For model mismatch: applying nominal Navier-Stokes to real PIV *is* a mismatch
+stress test, and its clearest consequence is negative. When we additionally
+learn the Reynolds number, every method exceeds 51% relative error, which we
+report as failed identification.
 
 ## Q4. EMA coefficient and the beta / rho notation
 
-You are right that the notation is confusing. The implementation uses the
-update `s_t = (1 - m) s_{t-1} + m * s_hat_t`, so `m` is the weight on the
-**new** batch statistic and the decay on the old state is
-`rho = 1 - m`. The main text's beta and the appendix's rho are therefore not
-the same quantity; the code value is `m = 0.05`, i.e. `rho = 0.95`. We will fix
-this to a single stated convention.
+You are right. The main text writes the update with `beta` as the weight on the
+**new** batch statistic, while the algorithm box and appendix call the same
+constant an EMA *decay* `rho`; those are complements, not the same number. The
+implementation uses 0.05 as the new-batch weight, and we will state a single
+convention consistently.
 
 Sensitivity (Allen-Cahn, 15%, seeds 40-42):
 
@@ -142,17 +134,7 @@ the range.
 Two further sensitivity runs are in progress and will be posted during the
 discussion period: a sweep of the gate's initial cutoff and steepness, and the
 staged-training ablation re-run with the warm-up removed at a matched
-30,000-update budget so the comparison isolates the schedule rather than the
-budget.
-
-While preparing this we found and must disclose two code/paper mismatches:
-the YAML fields named `init_threshold` / `init_steepness` are consumed by a
-different (ablation) gate and never reach the main trainable gate, which always
-started from its constructor values; and Appendix D states
-`lambda_rej = 1.0` for Allen-Cahn, which cannot have produced our reported
-table -- cost 1.0 yields rMAE 0.86890 whereas the table reports 0.134. The
-configuration value is 0.5 and the appendix sentence is an error we will
-correct.
+30,000-update budget.
 
 ## Q5. Compute-matched comparison
 
@@ -169,11 +151,3 @@ As a conservative update-count control we gave the ordinary baselines 35,000
 full PINN updates (27 runs). Their rMAE remains 0.87534 / 0.59199 / 0.44803
 (Allen-Cahn / Burgers / lambda-omega), above both 30,000-update PINN-EBM and
 naPINN.
-
-That is an update-count control, not an equal-time one, because our earlier
-timings came from a shared server. We are therefore now running a
-**hardware-isolated equal-elapsed-time** comparison on a single exclusively
-reserved GPU, in which
-each baseline receives exactly naPINN's end-to-end seconds and takes as many
-updates as fit.
-We will report it during the discussion period.

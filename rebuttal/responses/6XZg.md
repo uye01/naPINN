@@ -10,29 +10,20 @@ we could check, and several led us to findings we now disclose below.
 
 ## 1. Our Bayesian baseline is not a faithful HMC B-PINN
 
-You are right. Our Bayesian baseline uses mean-field variational inference,
-not the HMC posterior sampling of Yang et al., so it is not a faithful
-implementation of that work and we should not have presented it as one. We
-will state that distinction explicitly.
+You are right, and we accept the point without qualification. Our Bayesian
+baseline uses mean-field variational inference, not the HMC posterior sampling
+of Yang et al. A factorised Gaussian posterior is the weaker approximation, so
+its numbers say nothing about the original method, and reporting that row
+simply as B-PINN invited exactly the unfair comparison you describe. We will
+relabel it as a variational baseline and withdraw any implied comparison with
+HMC B-PINN.
 
-We are currently implementing and running an HMC B-PINN. It samples the network
-weights and the unknown PDE coefficient jointly under a Gaussian prior and
-Gaussian data and PDE likelihoods, on a fixed design: the collocation and
-measurement sets are drawn once, since resampling them per step would make the
-potential stochastic and break detailed balance. The leapfrog step size is
-adapted by dual averaging during burn-in only. The sampler configuration
-(2 chains, 1,000 burn-in, 1,000 retained samples, 30 leapfrog steps) was fixed
-on a separate calibration seed using the acceptance rate alone, before any
-error metric was inspected, and we run two data-noise scales so that HMC is not
-represented by a single possibly-misspecified choice.
-
-HMC over a 26k-parameter posterior is demanding, and our calibration confirmed
-the sampler is sensitive here: one noise-scale setting drove the adapted step
-size to about 1e-8, at which the chain cannot explore. We therefore report
-acceptance rate, split R-hat and effective sample size for every run against
-thresholds fixed in advance (acceptance >= 0.4, R-hat <= 1.1), and will treat a
-run as inconclusive rather than quote an error value if they are not met. We
-will share the results during the discussion period.
+A faithful comparison would need a specified prior, step-size and trajectory
+schedule, burn-in, sample budget and convergence diagnostics over a posterior
+of roughly 26k parameters. We did not establish those within the response
+period, so we make no claim relative to HMC B-PINN and record this as a
+limitation rather than quote a number from a sampler we cannot show has
+converged.
 
 ## 2. The uncertainty-quantification claim in Related Work
 
@@ -138,7 +129,7 @@ loss inside the same gated pipeline does, with naPINN + L1 reaching rMSE
 the reliability gate is a component that composes with an appropriate loss, not
 a replacement for choosing one. On real PIV we additionally cover persistent
 drift, AR(1) temporal correlation and spatially clustered burst failure, where
-a plain LAD loss wins three of five conditions.
+naPINN is lowest in four of five and a plain LAD loss at the mildest level.
 
 ## 7. Training cost in the main body
 

@@ -35,6 +35,10 @@ from sklearn.metrics import roc_auc_score
 from pinnlab.registry import get_experiment, get_model
 from pinnlab.utils.data_loss import data_loss_q_gaussian
 from pinnlab.utils.seed import seed_everything
+from scripts.rebuttal.preprocess_screen import (
+    compute_screen_mask,
+    screen_diagnostics,
+)
 
 
 METHODS = {
@@ -191,6 +195,36 @@ def configure_experiment(
         else:
             config["data_loss"]["kind"] = "mse"
     return config
+
+
+def apply_preprocess_screen(experiment, kind: str, k: float) -> dict[str, Any]:
+    """Drop screen-flagged measurements before training, then train normally.
+
+    The screen itself lives in ``preprocess_screen`` so the synthetic and the
+    real-PIV versions of this baseline are provably the same rule; only the
+    label bookkeeping differs. Here the corrupted rows are recorded as indices.
+    """
+    flagged = compute_screen_mask(
+        experiment.X_data.detach(), experiment.y_data.detach(), kind, k
+    )
+    corrupted = torch.zeros_like(flagged)
+    indices = np.asarray(getattr(experiment, "outlier_indices", []), dtype=int)
+    if indices.size:
+        corrupted[torch.as_tensor(indices, device=flagged.device)] = True
+
+    diagnostics = screen_diagnostics(flagged, corrupted, kind, k)
+    keep = ~flagged
+    if int(keep.sum()) == 0:
+        raise RuntimeError(f"Screen {kind} at k={k} removed every measurement")
+
+    experiment.X_data = experiment.X_data[keep]
+    experiment.y_data = experiment.y_data[keep]
+    if getattr(experiment, "y_clean", None) is not None:
+        experiment.y_clean = experiment.y_clean[keep]
+    # The screen renumbers the rows, so the stored outlier indices no longer
+    # address anything. Clear them rather than leave a stale mapping.
+    experiment.outlier_indices = np.asarray([], dtype=int)
+    return diagnostics
 
 
 def residual_from_batch(model, batch: dict[str, torch.Tensor]) -> torch.Tensor:
@@ -540,6 +574,8 @@ def main(args: argparse.Namespace) -> None:
         sensitivity_label += f"_warmup_{args.warmup_steps}"
     if args.outlier_mode is not None:
         sensitivity_label += f"_outlier_{args.outlier_mode}"
+    if args.preprocess_screen is not None:
+        sensitivity_label += f"_screen_{args.preprocess_screen}_k{args.preprocess_k:g}"
     if args.freeze_gate:
         sensitivity_label += "_frozengate"
     output_dir = (
@@ -586,6 +622,13 @@ def main(args: argparse.Namespace) -> None:
     # EBM construction consumes RNG only for methods that instantiate it.
     # Reseeding here keeps the PINN initialization and subsequent batch draws
     # paired across methods while preserving the already-created observations.
+    screen_diagnostics: dict[str, Any] = {}
+    if args.preprocess_screen is not None:
+        screen_diagnostics = apply_preprocess_screen(
+            experiment, args.preprocess_screen, args.preprocess_k
+        )
+        print(json.dumps(screen_diagnostics, sort_keys=True), flush=True)
+
     seed_everything(args.seed)
     model = get_model(args.model_name)(model_config).to(device)
     n_f = int(experiment_config["batch"]["n_f"])
@@ -757,6 +800,7 @@ def main(args: argparse.Namespace) -> None:
         "time_budget_seconds": args.time_budget_seconds,
         "outlier_mode": args.outlier_mode or "additive",
         "freeze_gate": bool(args.freeze_gate),
+        "preprocess_screen": screen_diagnostics or None,
         "estimator_only_steps": (
             args.estimator_init_steps
             if args.method in {*NAPINN_METHODS, "pinn_ebm"}
@@ -801,6 +845,22 @@ if __name__ == "__main__":
     parser.add_argument("--joint-steps", type=int, default=25000)
     parser.add_argument("--baseline-steps", type=int, default=30000)
     parser.add_argument("--estimator-init-steps", type=int, default=5000)
+    parser.add_argument(
+        "--preprocess-screen",
+        choices=["global_z", "global_mad", "local_median"],
+        default=None,
+        help=(
+            "Statistically screen the raw measurements and drop the flagged "
+            "rows before training, so an ordinary PINN is fitted to the "
+            "pre-processed data. Unset leaves the dataset untouched."
+        ),
+    )
+    parser.add_argument(
+        "--preprocess-k",
+        type=float,
+        default=3.0,
+        help="Threshold in robust standard deviations for --preprocess-screen.",
+    )
     parser.add_argument(
         "--freeze-gate",
         action="store_true",

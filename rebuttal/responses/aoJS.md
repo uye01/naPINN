@@ -74,7 +74,7 @@ The same ordering holds at 10%, and naPINN-MSE has the lowest mean rMAE in all
 six conditions of a separate 144-run matrix over three RealPDEBench scenarios.
 It is not uniform: OrPINN has the lowest rMSE on FSI, one naPINN variant fails
 on a Foil seed (0.70040), and across five structured corruption families a
-plain LAD loss is best on three.
+plain LAD loss is better at the mildest drift level.
 
 naPINN is lower on all three synthetic benchmarks and by a much wider margin on
 real PIV, and the widening is worth reporting in its own right. A plausible

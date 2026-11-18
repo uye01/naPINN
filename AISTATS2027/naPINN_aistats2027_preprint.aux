@@ -1,0 +1,278 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{Raissi2019,Karniadakis2021}
+\citation{Raissi2020}
+\citation{Tartakovsky2020}
+\citation{Wang2021,McClenny2023}
+\citation{Peng2022}
+\citation{Duarte2025}
+\citation{Peng2022}
+\citation{Pilar2024}
+\@writefile{toc}{\contentsline {section}{\numberline {1}INTRODUCTION}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{INTRODUCTION}{section.1}{}}
+\newlabel{sec:intro@cref}{{[section][1][]1}{[1][1][]1}}
+\citation{hu2026realpdebench}
+\citation{Rahaman2019,Wang2021,SWang2022,CWang2022}
+\citation{Chen2018,Xiang2022,Hwang2024,Bischof2025}
+\citation{McClenny2023}
+\citation{Nabian2021}
+\citation{Wu2024,Duan2025}
+\citation{Peng2022}
+\citation{Duarte2025}
+\citation{Pilar2024}
+\citation{LeCun2006}
+\citation{Yang2021}
+\citation{Yang2019}
+\citation{Natarajan2013,Jiang2018,Han2018,Li2020}
+\citation{Kumar2010}
+\citation{Huber1973,Hampel1974,Rousseeuw1984}
+\citation{Chandola2013,Ruff2018,Pang2021}
+\citation{Yang2024,Wang2024DSS}
+\citation{Hendrycks2019,Ovadia2019}
+\@writefile{toc}{\contentsline {section}{\numberline {2}RELATED WORK}{2}{section.4}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{RELATED WORK}{section.4}{}}
+\newlabel{sec:related@cref}{{[section][2][]2}{[1][2][]2}}
+\@writefile{toc}{\contentsline {paragraph}{Stabilizing PINN training.}{2}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Robust and probabilistic inverse PINNs.}{2}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Reliability-aware learning.}{2}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}METHOD}{2}{section.8}\protected@file@percent }
+\newlabel{sec:method}{{3}{2}{METHOD}{section.8}{}}
+\newlabel{sec:method@cref}{{[section][3][]3}{[1][2][]2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Problem Setting}{2}{subsection.9}\protected@file@percent }
+\newlabel{eq:measure}{{1}{2}{Problem Setting}{equation.10}{}}
+\newlabel{eq:measure@cref}{{[equation][1][]1}{[1][2][]2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The naPINN framework. The PINN $\hat  u_\theta $ is trained on a PDE loss and a gated data loss. A density estimator with parameters $\phi $ (here an EBM) scores the normalized residuals, a reliability gate maps the standardized log-density to a weight $g_i$ on the data loss, and the rejection cost $\mathcal  {L}_{\mathrm  {rej}}$ penalizes exclusion.}}{3}{figure.3}\protected@file@percent }
+\newlabel{fig:framework}{{1}{3}{The naPINN framework. The PINN $\hat u_\theta $ is trained on a PDE loss and a gated data loss. A density estimator with parameters $\phi $ (here an EBM) scores the normalized residuals, a reliability gate maps the standardized log-density to a weight $g_i$ on the data loss, and the rejection cost $\mathcal {L}_{\mathrm {rej}}$ penalizes exclusion}{figure.3}{}}
+\newlabel{fig:framework@cref}{{[figure][1][]1}{[1][2][]3}}
+\newlabel{eq:pde}{{2}{3}{Problem Setting}{equation.11}{}}
+\newlabel{eq:pde@cref}{{[equation][2][]2}{[1][3][]3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Residual Density}{3}{subsection.12}\protected@file@percent }
+\newlabel{eq:ebm}{{3}{3}{Residual Density}{equation.13}{}}
+\newlabel{eq:ebm@cref}{{[equation][3][]3}{[1][3][]3}}
+\newlabel{eq:est}{{4}{3}{Residual Density}{equation.14}{}}
+\newlabel{eq:est@cref}{{[equation][4][]4}{[1][3][]3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Reliability Gate and Objective}{3}{subsection.15}\protected@file@percent }
+\newlabel{eq:gate}{{5}{3}{Reliability Gate and Objective}{equation.16}{}}
+\newlabel{eq:gate@cref}{{[equation][5][]5}{[1][3][]3}}
+\newlabel{eq:data}{{6}{3}{Reliability Gate and Objective}{equation.17}{}}
+\newlabel{eq:data@cref}{{[equation][6][]6}{[1][3][]3}}
+\citation{Rousseeuw1984,Kumar2010}
+\newlabel{eq:rej}{{7}{4}{Reliability Gate and Objective}{equation.18}{}}
+\newlabel{eq:rej@cref}{{[equation][7][]7}{[1][4][]4}}
+\newlabel{eq:total}{{8}{4}{Reliability Gate and Objective}{equation.21}{}}
+\newlabel{eq:total@cref}{{[equation][8][]8}{[1][4][]4}}
+\newlabel{eq:estmin}{{9}{4}{Reliability Gate and Objective}{equation.22}{}}
+\newlabel{eq:estmin@cref}{{[equation][9][]9}{[1][4][]4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Interpretation of the Objective}{4}{subsection.25}\protected@file@percent }
+\newlabel{sec:properties}{{3.4}{4}{Interpretation of the Objective}{subsection.25}{}}
+\newlabel{sec:properties@cref}{{[subsection][4][3]3.4}{[1][4][]4}}
+\newlabel{prop:gate}{{1}{4}{}{proposition.26}{}}
+\newlabel{prop:gate@cref}{{[proposition][1][]1}{[1][4][]4}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces naPINN}}{4}{algorithm.27}\protected@file@percent }
+\newlabel{alg:napinn}{{1}{4}{Interpretation of the Objective}{algorithm.27}{}}
+\newlabel{alg:napinn@cref}{{[algorithm][1][]1}{[1][4][]4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Training Schedule and Cost}{4}{subsection.44}\protected@file@percent }
+\newlabel{sec:schedule}{{3.5}{4}{Training Schedule and Cost}{subsection.44}{}}
+\newlabel{sec:schedule@cref}{{[subsection][5][3]3.5}{[1][4][]4}}
+\citation{hu2026realpdebench}
+\citation{Peng2022}
+\citation{Duarte2025}
+\citation{Yang2021}
+\citation{Pilar2024}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Field error on the simulated benchmarks at three outlier ratios, mean (s.d.) over ten trials. \emph  {Clean data} refers to a PINN trained on uncorrupted measurements. Best in bold, second best underlined.}}{5}{table.24}\protected@file@percent }
+\newlabel{tab:exact}{{1}{5}{Field error on the simulated benchmarks at three outlier ratios, mean (s.d.) over ten trials. \emph {Clean data} refers to a PINN trained on uncorrupted measurements. Best in bold, second best underlined}{table.24}{}}
+\newlabel{tab:exact@cref}{{[table][1][]1}{[1][4][]5}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}EXPERIMENTAL SETUP}{5}{section.45}\protected@file@percent }
+\newlabel{sec:setup}{{4}{5}{EXPERIMENTAL SETUP}{section.45}{}}
+\newlabel{sec:setup@cref}{{[section][4][]4}{[1][5][]5}}
+\@writefile{toc}{\contentsline {paragraph}{Simulated benchmarks.}{5}{section*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Real measurements.}{5}{section*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Methods.}{5}{section*.50}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Reconstructions under $10\%$ gross outliers at two time slices per field. The rows show the reference solution, naPINN, a standard PINN, and the absolute errors of naPINN and of the standard PINN. Color scales differ across fields.}}{6}{figure.47}\protected@file@percent }
+\newlabel{fig:qualitative}{{2}{6}{Reconstructions under $10\%$ gross outliers at two time slices per field. The rows show the reference solution, naPINN, a standard PINN, and the absolute errors of naPINN and of the standard PINN. Color scales differ across fields}{figure.47}{}}
+\newlabel{fig:qualitative@cref}{{[figure][2][]2}{[1][5][]6}}
+\@writefile{toc}{\contentsline {paragraph}{Metrics.}{6}{section*.51}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Trials and seeds.}{6}{section*.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}RESULTS}{6}{section.53}\protected@file@percent }
+\newlabel{sec:results}{{5}{6}{RESULTS}{section.53}{}}
+\newlabel{sec:results@cref}{{[section][5][]5}{[1][6][]6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Simulated Benchmarks}{6}{subsection.54}\protected@file@percent }
+\newlabel{sec:exact}{{5.1}{6}{Simulated Benchmarks}{subsection.54}{}}
+\newlabel{sec:exact@cref}{{[subsection][1][5]5.1}{[1][6][]6}}
+\@writefile{toc}{\contentsline {paragraph}{Coefficient recovery.}{6}{section*.55}\protected@file@percent }
+\citation{Peng2022}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Held-out rMAE\,/\,rMSE on real PIV (RealPDEBench Cylinder) with $10\%$ and $15\%$ corrupted training rows, mean over seeds $40$--$42$. All eight methods, with standard deviations, are reported in \cref  {app:real}. Best in bold, second best underlined.}}{7}{table.58}\protected@file@percent }
+\newlabel{tab:piv}{{2}{7}{Held-out rMAE\,/\,rMSE on real PIV (RealPDEBench Cylinder) with $10\%$ and $15\%$ corrupted training rows, mean over seeds $40$--$42$. All eight methods, with standard deviations, are reported in \cref {app:real}. Best in bold, second best underlined}{table.58}{}}
+\newlabel{tab:piv@cref}{{[table][2][]2}{[1][7][]7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Real Measurements Under a Nominal PDE}{7}{subsection.56}\protected@file@percent }
+\newlabel{sec:real}{{5.2}{7}{Real Measurements Under a Nominal PDE}{subsection.56}{}}
+\newlabel{sec:real@cref}{{[subsection][2][5]5.2}{[1][7][]7}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Field rMAE in the ablation study at $15\%$ gross outliers, mean\,$\pm $\,s.d.\ over seeds $40$--$42$. The first row is naPINN. A fixed gate is frozen at initialization for the density and set to the minibatch $95\%$ quantile for $|\tilde  r|$. MAD-PINN uses $60{,}000$ updates and all other rows $30{,}000$. Best in bold, second best underlined.}}{7}{table.60}\protected@file@percent }
+\newlabel{tab:mechanism}{{3}{7}{Field rMAE in the ablation study at $15\%$ gross outliers, mean\,$\pm $\,s.d.\ over seeds $40$--$42$. The first row is naPINN. A fixed gate is frozen at initialization for the density and set to the minibatch $95\%$ quantile for $|\tilde r|$. MAD-PINN uses $60{,}000$ updates and all other rows $30{,}000$. Best in bold, second best underlined}{table.60}{}}
+\newlabel{tab:mechanism@cref}{{[table][3][]3}{[1][7][]7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Ablation Study}{7}{subsection.63}\protected@file@percent }
+\newlabel{sec:mechanism}{{5.3}{7}{Ablation Study}{subsection.63}{}}
+\newlabel{sec:mechanism@cref}{{[subsection][3][5]5.3}{[1][7][]7}}
+\@writefile{toc}{\contentsline {paragraph}{Learning the gate.}{7}{section*.64}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Ordering by density.}{7}{section*.65}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pre-training screens.}{7}{section*.66}\protected@file@percent }
+\bibstyle{plainnat}
+\bibdata{references}
+\bibcite{Asch2016}{{1}{2016}{{Asch et~al.}}{{Asch, Bocquet, and Nodet}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {Left.} Learned residual density after estimator initialization and after joint training, against the injected background-noise density (Burgers, $5\%$ gross outliers). Joint training resolves the asymmetric, multimodal noise. \textbf  {Right.} Trained gate against the standardized log-density on Allen--Cahn at $10\%$ gross outliers, with one in five measurements of each class plotted. The gate is nearly a hard decision and excludes $98\%$ of corrupted and $0.75\%$ of clean measurements. Labels are used only for this plot.}}{8}{figure.62}\protected@file@percent }
+\newlabel{fig:learned}{{3}{8}{\textbf {Left.} Learned residual density after estimator initialization and after joint training, against the injected background-noise density (Burgers, $5\%$ gross outliers). Joint training resolves the asymmetric, multimodal noise. \textbf {Right.} Trained gate against the standardized log-density on Allen--Cahn at $10\%$ gross outliers, with one in five measurements of each class plotted. The gate is nearly a hard decision and excludes $98\%$ of corrupted and $0.75\%$ of clean measurements. Labels are used only for this plot}{figure.62}{}}
+\newlabel{fig:learned@cref}{{[figure][3][]3}{[1][7][]8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Modularity and Sensitivity}{8}{subsection.67}\protected@file@percent }
+\newlabel{sec:practical}{{5.4}{8}{Modularity and Sensitivity}{subsection.67}{}}
+\newlabel{sec:practical@cref}{{[subsection][4][5]5.4}{[1][8][]8}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}DISCUSSION}{8}{section.68}\protected@file@percent }
+\newlabel{sec:discussion}{{6}{8}{DISCUSSION}{section.68}{}}
+\newlabel{sec:discussion@cref}{{[section][6][]6}{[1][8][]8}}
+\bibcite{Bischof2025}{{2}{2025}{{Bischof and Kraus}}{{}}}
+\bibcite{Bu2021QRes}{{3}{2021}{{Bu and Karpatne}}{{}}}
+\bibcite{Chandola2013}{{4}{2009}{{Chandola et~al.}}{{Chandola, Banerjee, and Kumar}}}
+\bibcite{Chen2018}{{5}{2018}{{Chen et~al.}}{{Chen, Badrinarayanan, Lee, and Rabinovich}}}
+\bibcite{Duan2025}{{6}{2025}{{Duan et~al.}}{{Duan, Wu, Hu, Ren, Peng, and Sun}}}
+\bibcite{Duarte2025}{{7}{2025}{{Duarte et~al.}}{{Duarte, de~Lima, and de~Araújo}}}
+\bibcite{Hampel1974}{{8}{1974}{{Hampel}}{{}}}
+\bibcite{Han2018}{{9}{2018}{{Han et~al.}}{{Han, Yao, Yu, Niu, Xu, Hu, Tsang, and Sugiyama}}}
+\bibcite{Hendrycks2019}{{10}{2019}{{Hendrycks and Dietterich}}{{}}}
+\bibcite{hu2026realpdebench}{{11}{2026}{{Hu et~al.}}{{Hu, Feng, Liu, Yan, Deng, Gao, Zheng, Zheng, Yu, Wang, Li, Ma, Zhou, Lu, Fan, and Wu}}}
+\bibcite{Huber1973}{{12}{1973}{{Huber}}{{}}}
+\bibcite{Hwang2024}{{13}{2024}{{Hwang and Lim}}{{}}}
+\bibcite{Jiang2018}{{14}{2018}{{Jiang et~al.}}{{Jiang, Zhou, Leung, Li, and Fei-Fei}}}
+\bibcite{Karniadakis2021}{{15}{2021}{{Karniadakis et~al.}}{{Karniadakis, Kevrekidis, Lu, Perdikaris, Wang, and Yang}}}
+\bibcite{Kumar2010}{{16}{2010}{{Kumar et~al.}}{{Kumar, Packer, and Koller}}}
+\bibcite{LeCun2006}{{17}{2006}{{LeCun et~al.}}{{LeCun, Chopra, Hadsell, Ranzato, and Huang}}}
+\bibcite{Li2020}{{18}{2020}{{Li et~al.}}{{Li, Socher, and Hoi}}}
+\bibcite{Liu2024KAN}{{19}{2025}{{Liu et~al.}}{{Liu, Wang, Vaidya, Ruehle, Halverson, Soljačić, Hou, and Tegmark}}}
+\bibcite{McClenny2023}{{20}{2023}{{McClenny and Braga-Neto}}{{}}}
+\bibcite{Nabian2021}{{21}{2021}{{Nabian et~al.}}{{Nabian, Gladstone, and Meidani}}}
+\bibcite{Natarajan2013}{{22}{2013}{{Natarajan et~al.}}{{Natarajan, Dhillon, Ravikumar, and Tewari}}}
+\bibcite{Ovadia2019}{{23}{2019}{{Ovadia et~al.}}{{Ovadia, Fertig, Ren, Nado, Sculley, Nowozin, Dillon, Lakshminarayanan, and Snoek}}}
+\bibcite{Pang2021}{{24}{2021}{{Pang et~al.}}{{Pang, Shen, Cao, and van~den Hengel}}}
+\bibcite{Peng2022}{{25}{2022}{{Peng et~al.}}{{Peng, Yao, Zhou, Zhang, and Yao}}}
+\bibcite{Pilar2024}{{26}{2024}{{Pilar and Wahlstr{\"o}m}}{{}}}
+\bibcite{Rahaman2019}{{27}{2019}{{Rahaman et~al.}}{{Rahaman, Baratin, Arpit, Draxler, Lin, Hamprecht, Bengio, and Courville}}}
+\bibcite{Raissi2019}{{28}{2019}{{Raissi et~al.}}{{Raissi, Perdikaris, and Karniadakis}}}
+\bibcite{Raissi2020}{{29}{2020}{{Raissi et~al.}}{{Raissi, Yazdani, and Karniadakis}}}
+\bibcite{Rousseeuw1984}{{30}{1984}{{Rousseeuw}}{{}}}
+\bibcite{Ruff2018}{{31}{2018}{{Ruff et~al.}}{{Ruff, Vandermeulen, G{\"o}rnitz, Deecke, Siddiqui, Binder, M{\"u}ller, and Kloft}}}
+\bibcite{Tartakovsky2020}{{32}{2020}{{Tartakovsky et~al.}}{{Tartakovsky, Marrero, Perdikaris, Tartakovsky, and Barajas-Solano}}}
+\bibcite{CWang2022}{{33}{2022{a}}{{Wang et~al.}}{{Wang, Li, He, and Wang}}}
+\bibcite{Wang2021}{{34}{2021}{{Wang et~al.}}{{Wang, Teng, and Perdikaris}}}
+\bibcite{SWang2022}{{35}{2022{b}}{{Wang et~al.}}{{Wang, Yu, and Perdikaris}}}
+\bibcite{Wang2024PirateNet}{{36}{2024{a}}{{Wang et~al.}}{{Wang, Li, Chen, and Perdikaris}}}
+\bibcite{Wang2024DSS}{{37}{2024{b}}{{Wang et~al.}}{{Wang, Hong, Cheraghian, Rahman, Ahmedt-Aristizabal, Petersson, and Harandi}}}
+\bibcite{Wong2022FLS}{{38}{2024}{{Wong et~al.}}{{Wong, Ooi, Gupta, and Ong}}}
+\bibcite{Wu2024}{{39}{2024}{{Wu et~al.}}{{Wu, Luo, Ma, Wang, and Long}}}
+\bibcite{Xiang2022}{{40}{2022}{{Xiang et~al.}}{{Xiang, Peng, Liu, and Yao}}}
+\bibcite{Yang2024}{{41}{2024}{{Yang et~al.}}{{Yang, Wang, Yu, Zhang, Jiang, and Zhou}}}
+\bibcite{Yang2021}{{42}{2021}{{Yang et~al.}}{{Yang, Meng, and Karniadakis}}}
+\bibcite{Yang2019}{{43}{2019}{{Yang and Perdikaris}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}PROOF OF PROPOSITION 1}{11}{appendix.71}\protected@file@percent }
+\newlabel{app:proof}{{A}{11}{PROOF OF PROPOSITION 1}{appendix.71}{}}
+\newlabel{app:proof@cref}{{[appendix][1][2147483647]A}{[1][11][]11}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}IMPLEMENTATION DETAILS}{11}{appendix.72}\protected@file@percent }
+\newlabel{app:method}{{B}{11}{IMPLEMENTATION DETAILS}{appendix.72}{}}
+\newlabel{app:method@cref}{{[appendix][2][2147483647]B}{[1][11][]11}}
+\@writefile{toc}{\contentsline {paragraph}{Estimators.}{11}{section*.73}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Gate.}{11}{section*.74}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Architecture and optimization.}{12}{section*.75}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Residual normalization.}{12}{section*.76}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Latent-variable reading.}{12}{section*.77}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}BENCHMARK DETAILS}{12}{appendix.78}\protected@file@percent }
+\newlabel{app:benchmarks}{{C}{12}{BENCHMARK DETAILS}{appendix.78}{}}
+\newlabel{app:benchmarks@cref}{{[appendix][3][2147483647]C}{[1][12][]12}}
+\@writefile{toc}{\contentsline {paragraph}{Allen--Cahn.}{12}{section*.79}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Burgers.}{12}{section*.80}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{$\lambda $--$\omega $ reaction--diffusion.}{12}{section*.81}\protected@file@percent }
+\citation{Asch2016}
+\citation{Yang2021,Peng2022,Duarte2025}
+\citation{Duarte2025}
+\citation{Pilar2024}
+\citation{Peng2022}
+\citation{Yang2021}
+\@writefile{toc}{\contentsline {paragraph}{Sensors and corruption.}{13}{section*.82}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why simulated benchmarks.}{13}{section*.83}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Metrics.}{13}{section*.84}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {D}BASELINE DETAILS}{13}{appendix.85}\protected@file@percent }
+\newlabel{app:baselines}{{D}{13}{BASELINE DETAILS}{appendix.85}{}}
+\newlabel{app:baselines@cref}{{[appendix][4][2147483647]D}{[1][13][]13}}
+\@writefile{toc}{\contentsline {paragraph}{Data losses.}{13}{section*.86}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Variational B-PINN.}{13}{section*.87}\protected@file@percent }
+\newlabel{app:pinnebm}{{D}{13}{PINN-EBM}{section*.88}{}}
+\newlabel{app:pinnebm@cref}{{[appendix][4][2147483647]D}{[1][13][]13}}
+\@writefile{toc}{\contentsline {paragraph}{PINN-EBM.}{13}{section*.88}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Two-stage MAD-PINN.}{13}{section*.89}\protected@file@percent }
+\newlabel{app:notrun}{{D}{13}{HMC B-PINN}{section*.90}{}}
+\newlabel{app:notrun@cref}{{[appendix][4][2147483647]D}{[1][13][]13}}
+\@writefile{toc}{\contentsline {paragraph}{HMC B-PINN.}{13}{section*.90}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {E}ADDITIONAL RESULTS ON SIMULATED BENCHMARKS}{14}{appendix.91}\protected@file@percent }
+\newlabel{app:exact}{{E}{14}{ADDITIONAL RESULTS ON SIMULATED BENCHMARKS}{appendix.91}{}}
+\newlabel{app:exact@cref}{{[appendix][5][2147483647]E}{[1][14][]14}}
+\@writefile{toc}{\contentsline {paragraph}{Robustness across outlier ratios.}{14}{section*.92}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Field rMSE against outlier ratio for the robust-loss baselines and naPINN in the ten-trial experiments. Error bars are one standard deviation.}}{14}{figure.94}\protected@file@percent }
+\newlabel{fig:ratio_curve}{{4}{14}{Field rMSE against outlier ratio for the robust-loss baselines and naPINN in the ten-trial experiments. Error bars are one standard deviation}{figure.94}{}}
+\newlabel{fig:ratio_curve@cref}{{[figure][4][2147483647]4}{[1][14][]14}}
+\@writefile{toc}{\contentsline {paragraph}{Coefficient recovery.}{14}{section*.95}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Update-count control.}{14}{section*.96}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {F}ADDITIONAL RESULTS ON REAL MEASUREMENTS}{14}{appendix.97}\protected@file@percent }
+\newlabel{app:real}{{F}{14}{ADDITIONAL RESULTS ON REAL MEASUREMENTS}{appendix.97}{}}
+\newlabel{app:real@cref}{{[appendix][6][2147483647]F}{[1][14][]14}}
+\@writefile{toc}{\contentsline {paragraph}{Data.}{14}{section*.98}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{All methods on the Cylinder data.}{14}{section*.99}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Combining naPINN with robust losses.}{15}{section*.100}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Additional scenarios.}{15}{section*.101}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {G}ABLATION DETAILS}{15}{appendix.102}\protected@file@percent }
+\newlabel{app:ablations}{{G}{15}{ABLATION DETAILS}{appendix.102}{}}
+\newlabel{app:ablations@cref}{{[appendix][7][2147483647]G}{[1][15][]15}}
+\@writefile{toc}{\contentsline {paragraph}{Gate classification.}{15}{section*.103}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Frozen gate.}{16}{section*.104}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Residual-magnitude gate.}{16}{section*.105}\protected@file@percent }
+\newlabel{app:screens}{{G}{16}{Pre-training screens}{section*.106}{}}
+\newlabel{app:screens@cref}{{[appendix][7][2147483647]G}{[1][16][]16}}
+\@writefile{toc}{\contentsline {paragraph}{Pre-training screens.}{16}{section*.106}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Screen removal diagnostics.}{16}{section*.107}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Warm-up.}{16}{section*.108}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Estimator.}{16}{section*.109}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Other noise families.}{16}{section*.110}\protected@file@percent }
+\citation{Wong2022FLS}
+\citation{Bu2021QRes}
+\citation{Wang2024PirateNet}
+\citation{Liu2024KAN}
+\@writefile{toc}{\contentsline {section}{\numberline {H}BACKBONE ARCHITECTURES}{17}{appendix.111}\protected@file@percent }
+\newlabel{app:backbone}{{H}{17}{BACKBONE ARCHITECTURES}{appendix.111}{}}
+\newlabel{app:backbone@cref}{{[appendix][8][2147483647]H}{[1][17][]17}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Backbone ablation at $10\%$ outliers, ten trials. Best in bold, second best underlined.}}{17}{table.113}\protected@file@percent }
+\newlabel{tab:backbone}{{4}{17}{Backbone ablation at $10\%$ outliers, ten trials. Best in bold, second best underlined}{table.113}{}}
+\newlabel{tab:backbone@cref}{{[table][4][2147483647]4}{[1][17][]17}}
+\@writefile{toc}{\contentsline {section}{\numberline {I}SENSITIVITY}{17}{appendix.114}\protected@file@percent }
+\newlabel{app:sensitivity}{{I}{17}{SENSITIVITY}{appendix.114}{}}
+\newlabel{app:sensitivity@cref}{{[appendix][9][2147483647]I}{[1][17][]17}}
+\@writefile{toc}{\contentsline {paragraph}{Running-scale weight.}{17}{section*.115}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Gate initialization.}{18}{section*.116}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Rejection cost.}{18}{section*.117}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Sensitivity to the rejection cost on Allen--Cahn at $15\%$ outliers, showing rMAE (top) and rMSE (bottom) against $\lambda _{\mathrm  {rej}}$.}}{18}{figure.119}\protected@file@percent }
+\newlabel{fig:rej_cost}{{5}{18}{Sensitivity to the rejection cost on Allen--Cahn at $15\%$ outliers, showing rMAE (top) and rMSE (bottom) against $\rej $}{figure.119}{}}
+\newlabel{fig:rej_cost@cref}{{[figure][5][2147483647]5}{[1][18][]18}}
+\@writefile{toc}{\contentsline {paragraph}{Gate parameters during training.}{18}{section*.120}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Pre-softplus cutoff $\tilde  \tau $ (top) and steepness $\tilde  a$ (bottom) during joint training on $\lambda $--$\omega $ at three outlier ratios.}}{19}{figure.122}\protected@file@percent }
+\newlabel{fig:gate_params}{{6}{19}{Pre-softplus cutoff $\tilde \tau $ (top) and steepness $\tilde a$ (bottom) during joint training on $\lambda $--$\omega $ at three outlier ratios}{figure.122}{}}
+\newlabel{fig:gate_params@cref}{{[figure][6][2147483647]6}{[1][18][]19}}
+\@writefile{toc}{\contentsline {section}{\numberline {J}COMPUTE}{19}{appendix.123}\protected@file@percent }
+\newlabel{app:compute}{{J}{19}{COMPUTE}{appendix.123}{}}
+\newlabel{app:compute@cref}{{[appendix][10][2147483647]J}{[1][18][]19}}
+\@writefile{toc}{\contentsline {paragraph}{Equal elapsed time.}{19}{section*.124}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {K}REPRODUCIBILITY}{19}{appendix.125}\protected@file@percent }
+\newlabel{app:repro}{{K}{19}{REPRODUCIBILITY}{appendix.125}{}}
+\newlabel{app:repro@cref}{{[appendix][11][2147483647]K}{[1][19][]19}}
+\@writefile{toc}{\contentsline {paragraph}{Experiment sets.}{19}{section*.126}\protected@file@percent }
+\citation{hu2026realpdebench}
+\@writefile{toc}{\contentsline {paragraph}{Settings.}{20}{section*.127}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {L}BROADER IMPACTS}{20}{appendix.128}\protected@file@percent }
+\newlabel{app:impact}{{L}{20}{BROADER IMPACTS}{appendix.128}{}}
+\newlabel{app:impact@cref}{{[appendix][12][2147483647]L}{[1][20][]20}}
+\gdef \@abspage@last{20}

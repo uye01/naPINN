@@ -1,0 +1,31 @@
+Thank you for addressing my comments.
+
+W1
+
+Thank you for the change. However, beware that without the strong B-PINN baseline comparison your claim is weaker
+
+W2
+
+Please include the reasoning in the comments for me to make the judgement
+
+W3
+
+I am not completely convinced on this point. But I will get back to it later in the process.
+
+W4
+
+Not completely agree here, my point was about the data pre-processing, you bring up the methods that have some of that logic integrated into their computation. What I would see as a fair test is some of the form: you pre-process data using some statistical runs (doesn't have to be z-score) and then use PINN with the pre-processed data. (In this step you remove the outliers before the model training). I do not think simply deflecting on that part is fair. You have implemented 3 more complex baselines, if you say that a simple pre-processing + PINN fails, why not demonstrate it?
+
+Also looking closer at benchmarks the Learnable residual threshold beats MAD_PINN on Allen-Cahn, but not on Burgers, did you explore why this inversion? Could it be a single seed issue? I do not see any reporting on variance or seeds are shown. Can we see any stability test on the spread? Are we sure this is not just a single training instance?
+
+W5
+
+Please describe what do you mean here: "We do not claim 0.10 is universally optimal, but the method is robust across this range." The way I see it you runs show that it is a rising trend (or maybe it is not shown right in the comment). Robust would mean that the performance is flat.
+
+W6
+
+I will give it a second look
+
+W7
+
+Ok , so you state that PINN converges faster compared to naPINN?

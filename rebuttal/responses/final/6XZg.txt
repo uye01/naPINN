@@ -1,10 +1,12 @@
+# Response to Reviewer 6XZg
+
 Thank you for your careful reading and comments.
 
 **W1.**
 
-You are right. Our Bayesian baseline uses mean-field variational inference, not the HMC posterior sampling of Yang et al., so it is not a faithful implementation of that work and we should not have presented it as one. We will state that distinction explicitly.
+You are right, and we accept the point without qualification. Our Bayesian baseline uses mean-field variational inference, not the HMC posterior sampling of Yang et al. A factorised Gaussian posterior is the weaker approximation, so its numbers say nothing about the original method, and reporting that row simply as B-PINN invited exactly the unfair comparison you describe. We will relabel it as a variational baseline and withdraw any implied comparison with HMC B-PINN.
 
-We are currently implementing and running an HMC B-PINN. It samples the network weights and the unknown PDE coefficient jointly under a Gaussian prior and Gaussian data and PDE likelihoods, on a fixed design: the collocation and measurement sets are drawn once, since resampling them per step would make the potential stochastic and break detailed balance. The leapfrog step size is adapted by dual averaging during burn-in only. The sampler configuration (2 chains, 1,000 burn-in, 1,000 retained samples, 30 leapfrog steps) was fixed on a separate calibration seed using the acceptance rate alone, before any error metric was inspected, and we run two data-noise scales so that HMC is not represented by a single possibly-misspecified choice. HMC over a 26k-parameter posterior is demanding, and our calibration confirmed the sampler is sensitive here: one noise-scale setting drove the adapted step size to about 1e-8, at which the chain cannot explore. We therefore report acceptance rate, split R-hat and effective sample size for every run against thresholds fixed in advance (acceptance >= 0.4, R-hat <= 1.1), and will treat a run as inconclusive rather than quote an error value if they are not met. We will share the results during the discussion period.
+A faithful comparison would need a specified prior, step-size and trajectory schedule, burn-in, sample budget and convergence diagnostics over a posterior of roughly 26k parameters. We did not establish those within the response period, so we make no claim relative to HMC B-PINN and record this as a limitation rather than quote a number from a sampler we cannot show has converged.
 
 **W2.**
 
@@ -39,18 +41,18 @@ One caveat about our own framing: the learnable residual threshold is a trained 
 
 We have run sensitivity studies rather than claiming optimisation.
 
-EMA update weight `m` (Allen-Cahn, 15%): rMAE 0.10778 / 0.09202 / 0.08551 for `m` = 0.01 / 0.05 / 0.10. We do not claim 0.10 is universally optimal, but the method is robust across this range.
+EMA update weight m (Allen-Cahn, 15%): rMAE 0.10778 / 0.09202 / 0.08551 for m = 0.01 / 0.05 / 0.10. We do not claim 0.10 is universally optimal, but the method is robust across this range.
 
-For the rejection cost, Appendix C already sweeps `lambda_rej` from 0 to 1.0 at 5%, 10% and 15% corruption: performance is flat over a broad intermediate band, degrades without the term, and degrades again at the top of the range.
+For the rejection cost, Appendix C already sweeps lambda_rej from 0 to 1.0 at 5%, 10% and 15% corruption: performance is flat over a broad intermediate band, degrades without the term, and degrades again at the top of the range.
 
 **W6.**
 
 Appendix B already reports Laplace and Gaussian measurement noise on the lambda-omega benchmark at 15% outliers. The result there is informative about the framework rather than about a single configuration: base naPINN does not beat LAD-PINN or OrPINN under either family, but swapping the reconstruction loss inside the same gated pipeline does, with naPINN + L1 reaching rMSE 0.059 / 0.064 against 0.085 / 0.109 for LAD-PINN. We read this as evidence that the reliability gate is a component that composes with an appropriate loss, not a replacement for choosing one. On real PIV we additionally cover persistent drift, AR(1) temporal correlation and spatially clustered burst failure, where a plain LAD loss wins three of five conditions.
 
-**W7.**
+W7.
 
 Agreed, and we will move it there. A standard PINN uses 30,000 updates; naPINN uses the same 30,000 (5,000 warm-up + 25,000 joint) plus a one-off 5,000-step estimator initialisation that the step budget did not count. That stage costs 46-49 s, so end to end the totals are about 1068 / 1269 / 1374 s for the PINN against 1239 / 1482 / 1464 s for naPINN on Allen-Cahn / Burgers / lambda-omega.
 
-**W8.**
+W8.
 
 Reference [3] should be Baydin et al., JMLR 18(153), 2018, not 1989. We are re-checking every entry rather than only that one.

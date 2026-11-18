@@ -1,3 +1,5 @@
+# Response to Reviewer aOJS
+
 Thank you for a careful and fair reading. We ran the comparison you asked for, on synthetic and real data, and report it in full below.
 
 **Q1.**
@@ -16,10 +18,9 @@ naPINN is lower on all three, but only by modest margins, so we present [31] as 
 
 What distinguishes naPINN are in how the estimate is used:
 
-1. Different training objective. [31] trains the PINN through the EBM's negative log-likelihood, so the learned density defines the data-fitting objective. naPINN keeps a conventional per-measurement reconstruction loss throughout and fits the density on detached* residuals for simplicity: the density reweights the loss, it never replaces it, and never back-propagates into the PINN.
-2. The estimator is a replaceable component, not the method. Because it only emits a scalar reliability score, KDE and GMM drop into the same pipeline unchanged and in our ablation sometimes match or exceed the EBM, most visibly on Allen-Cahn. The same holds for the loss: L1 and q-Gaussian variants swap in and help under some corruptions.
-3. It yields an explicit per-measurement decision. The gate emits an inclusion weight per observation, so under gross corruption it also acts as an anomaly detector: on the real PIV data from RealPDEBench it excludes 98.99% / 99.23% of injected gross components but only 2.95% / 4.23% of background-only ones. A likelihood-weighted objective gives a score, not an auditable decision.
-
+Different training objective. [31] trains the PINN through the EBM's negative log-likelihood, so the learned density defines the data-fitting objective. naPINN keeps a conventional per-measurement reconstruction loss throughout and fits the density on detached* residuals for simplicity: the density reweights the loss, it never replaces it, and never back-propagates into the PINN.
+The estimator is a replaceable component, not the method. Because it only emits a scalar reliability score, KDE and GMM drop into the same pipeline unchanged and in our ablation sometimes match or exceed the EBM, most visibly on Allen-Cahn. The same holds for the loss: L1 and q-Gaussian variants swap in and help under some corruptions.
+It yields an explicit per-measurement decision. The gate emits an inclusion weight per observation, so under gross corruption it also acts as an anomaly detector: on the real PIV data from RealPDEBench it excludes 98.99% / 99.23% of injected gross components but only 2.95% / 4.23% of background-only ones. A likelihood-weighted objective gives a score, not an auditable decision.
 On RealPDEBench the gap opens up. At the predeclared default corruption intensity, 15% gross rows, seeds 40-42 (held-out rMAE / rMSE):
 
 | Method | rMAE | rMSE |
@@ -43,7 +44,7 @@ Your question isolates the right thing, and we should be precise about what we h
 | --- | ---: | ---: | ---: |
 | Fixed-quantile screen (no EBM) | 0.509 | 0.373 | 0.237 |
 | Learnable residual threshold (no EBM) | 0.244 | 0.345 | 0.148 |
-| Two-stage MAD-PINN (published fixed screen) | 0.344 | 0.242 | 0.127 |
+| Two-stage MAD-PINN (published screen) | 0.344 | 0.242 | 0.127 |
 | naPINN (full) | **0.092** | **0.082** | **0.071** |
 
 Residual screening on its own does not account for the result. The fixed 5% quantile screen is under-powered by construction: at 15% corruption it can remove only about a third of the outliers. (It cannot adaptively deal with arbitrary noise.) The estimator-free learnable threshold does better but still carries 2.1x to 4.2x the error of full naPINN on every benchmark, and the published MAD screen is worse than naPINN everywhere despite twice the update budget.

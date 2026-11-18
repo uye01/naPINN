@@ -1,0 +1,29 @@
+**W4, on the baseline.** Your correction is right: MAD-PINN screens between two training stages, so it is not "pre-process, then train" and we should not have answered with it. We ran the test as you posed it: three screens on the raw measurements, the flagged rows dropped, then an ordinary MSE-PINN on what remains. 4G corruption at 15%, seeds 40-42, mean +- sample s.d.
+
+| Screen, then plain PINN | Allen-Cahn | Burgers | lambda-omega |
+| --- | ---: | ---: | ---: |
+| global z-score | 0.449 +- 0.060 | 0.207 +- 0.003 | 0.156 +- 0.018 |
+| global MAD | 0.321 +- 0.029 | 0.161 +- 0.016 | 0.096 +- 0.002 |
+| neighbourhood median | 0.152 +- 0.078 | 0.121 +- 0.017 | 0.083 +- 0.005 |
+| naPINN | **0.092** +- 0.004 | **0.082** +- 0.002 | **0.071** +- 0.001 |
+
+Exactly 15.00% of the measurement rows are corrupted. What each screen removed, in the same column order:
+
+| Screen | Removed | Of the outliers | Of the clean data |
+| --- | ---: | ---: | ---: |
+| global z-score | 13.4 / 17.9 / 9.6% | 54.1 / 81.9 / 63.5% | 6.24 / 6.59 / 0.02% |
+| global MAD | 13.3 / 14.8 / 12.8% | 60.0 / 84.5 / 82.9% | 5.04 / 2.44 / 0.35% |
+| neighbourhood median | 14.5 / 14.8 / 14.8% | 90.1 / 98.3 / 98.0% | 1.11 / 0.02 / 0.04% |
+
+The global rules fail as we said they would: a rule on raw values cannot tell a corrupted reading from a legitimate extremum in a field that varies over space and time, so they over-remove (17.9% cut on Burgers, 6.59% of the clean data lost) or under-remove (9.6% on lambda-omega at 63.5% recall). The neighbourhood median repairs that and becomes very nearly an oracle detector (98% of the outliers for 0.02-0.04% of the clean data) and still loses on every benchmark. Detection is not what separates the two. A screen decides once, before training, and the outliers it misses are handed to an unweighted MSE loss where a few gross values dominate the gradient; a learned gate downweights them instead and revises as the solution improves. The spreads follow: the pre-processed PINN is four to twenty times more variable than naPINN, because what a run achieves depends on which outliers happened to survive.
+
+The threshold is the practical obstacle, and we should be plain about it. Each one was chosen on a calibration seed by detection F1 against the known corruption labels, with no field error inspected. Had we instead kept whichever value minimised the evaluation metric, we would expect the screen to close the gap and in places to overtake us; we did not, because selecting a baseline on the metric it is judged by is oracle access we were unwilling to grant and no practitioner could use it either. Nor is there one value to fall back on -- across the nine screen-benchmark cells the selected k is 1.5 twice, 2.0 five times and 2.5 twice. Without labels neither threshold can be found, which is what makes this baseline hard to deploy rather than merely weaker. naPINN targets that situation: the cutoff is learned rather than set, and freezing it at its initialisation removes only 20.9-28.3% of the outliers against 99.3-99.4% when it is learned.
+
+**W4, on variance.** It's fair to point out, we added standard deviation to the table we already wrote in the first comment. Also, we used three seeds (40, 41, and 42).
+
+| Method (15% corruption) | Allen-Cahn | Burgers | lambda-omega |
+| --- | ---: | ---: | ---: |
+| Fixed-quantile residual screen | 0.509 +- 0.159 | 0.373 +- 0.031 | 0.237 +- 0.009 |
+| Two-stage MAD-PINN (published screen) | 0.344 +- 0.043 | 0.242 +- 0.012 | 0.127 +- 0.006 |
+| Learnable residual threshold | 0.244 +- 0.039 | 0.345 +- 0.014 | 0.148 +- 0.011 |
+| naPINN | **0.092** +- 0.004 | **0.082** +- 0.002 | **0.071** +- 0.001 |

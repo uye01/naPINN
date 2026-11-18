@@ -98,13 +98,12 @@ class Potential:
     def load(self, vector: torch.Tensor) -> None:
         vector_to_parameters(vector, self.params)
 
-    def energy_and_gradient(
-        self, vector: torch.Tensor
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        self.load(vector)
-        for parameter in self.params:
-            if parameter.grad is not None:
-                parameter.grad = None
+    def energy(self) -> torch.Tensor:
+        """Negative log posterior at the current parameters, differentiable.
+
+        The MAP phase minimises exactly this, so the optimiser and the sampler
+        cannot drift apart: there is one definition of the target.
+        """
         pde = self.experiment.pde_residual_loss(self.model, self.batch).sum()
         residual = self.batch["y_d"] - self.model(self.batch["X_d"])
         data = residual.square().sum()
@@ -116,12 +115,21 @@ class Potential:
             if extra
             else torch.zeros((), device=weights.device)
         )
-        energy = (
+        return (
             data / (2.0 * self.sigma_d**2)
             + pde / (2.0 * self.sigma_f**2)
             + prior / (2.0 * self.sigma_p**2)
             + coefficient / (2.0 * self.sigma_l**2)
         )
+
+    def energy_and_gradient(
+        self, vector: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        self.load(vector)
+        for parameter in self.params:
+            if parameter.grad is not None:
+                parameter.grad = None
+        energy = self.energy()
         gradient = torch.autograd.grad(energy, self.params, allow_unused=True)
         flat = torch.cat(
             [
@@ -136,11 +144,61 @@ class Potential:
         return energy.detach(), flat.detach()
 
 
-def leapfrog(potential, position, momentum, step_size, n_steps):
+def map_initialise(potential, position, args):
+    """Optimise to a MAP point and estimate a diagonal metric from the way.
+
+    Starting HMC from a randomly initialised network asks the sampler to find a
+    26,000-dimensional posterior mode within the warm-up budget, which it cannot
+    do; the chain stays where it started and every diagnostic reflects that
+    rather than the posterior. The standard B-PINN protocol optimises to a MAP
+    estimate first and samples around it, which is what this does.
+
+    Adam's second-moment buffer is an estimate of E[g^2] per coordinate, so it
+    doubles as a cheap diagonal preconditioner: the inverse mass is taken as
+    1/sqrt(E[g^2]), which rescales the badly conditioned directions that force
+    the step size to collapse.
+    """
+    if args.map_init_steps <= 0:
+        return position, torch.ones_like(position)
+
+    potential.load(position)
+    parameters = potential.params
+    optimiser = torch.optim.Adam(parameters, lr=args.map_lr)
+    for step in range(args.map_init_steps):
+        optimiser.zero_grad(set_to_none=True)
+        energy = potential.energy()
+        energy.backward()
+        optimiser.step()
+        if (step + 1) % 5000 == 0:
+            print(
+                json.dumps(
+                    {"map_step": step + 1, "energy": float(energy.detach())},
+                    sort_keys=True,
+                ),
+                flush=True,
+            )
+
+    position = potential.state()
+    if not args.precondition:
+        return position, torch.ones_like(position)
+    second_moment = torch.cat(
+        [
+            optimiser.state[parameter]["exp_avg_sq"].reshape(-1)
+            for parameter in parameters
+        ]
+    )
+    scale = second_moment.sqrt()
+    # Normalise so the metric only changes relative conditioning, leaving the
+    # overall step-size scale to dual averaging as before.
+    inverse_mass = scale.median() / torch.clamp(scale, min=1.0e-30)
+    return position, torch.clamp(inverse_mass, min=1.0e-4, max=1.0e4)
+
+
+def leapfrog(potential, position, momentum, step_size, n_steps, inverse_mass):
     energy, gradient = potential.energy_and_gradient(position)
     momentum = momentum - 0.5 * step_size * gradient
     for index in range(n_steps):
-        position = position + step_size * momentum
+        position = position + step_size * inverse_mass * momentum
         energy, gradient = potential.energy_and_gradient(position)
         if not torch.isfinite(energy) or not torch.isfinite(gradient).all():
             return position, momentum, torch.tensor(float("inf"))
@@ -159,21 +217,28 @@ def run_chain(potential, position, args, generator, chain_index):
     mu = float(np.log(10.0 * step_size))
     gamma, t0, kappa = 0.05, 10.0, 0.75
 
+    position, inverse_mass = map_initialise(potential, position, args)
+    # p ~ N(0, M) with M = diag(1 / inverse_mass); kinetic is 0.5 p' M^-1 p.
+    momentum_scale = inverse_mass.rsqrt()
+
     accepted = 0
     samples: list[torch.Tensor] = []
     parameter_trace: list[float] = []
     total = args.burn_in + args.n_samples
     for iteration in range(total):
-        momentum = torch.randn(
+        momentum = momentum_scale * torch.randn(
             position.shape, generator=generator, device=position.device
         )
         current_energy, _ = potential.energy_and_gradient(position)
-        current_hamiltonian = current_energy + 0.5 * momentum.square().sum()
+        current_hamiltonian = (
+            current_energy + 0.5 * (momentum.square() * inverse_mass).sum()
+        )
         proposal, proposal_momentum, proposal_energy = leapfrog(
-            potential, position, momentum, step_size, args.n_leapfrog
+            potential, position, momentum, step_size, args.n_leapfrog, inverse_mass
         )
         proposal_hamiltonian = (
-            proposal_energy + 0.5 * proposal_momentum.square().sum()
+            proposal_energy
+            + 0.5 * (proposal_momentum.square() * inverse_mass).sum()
         )
         log_accept = float(current_hamiltonian - proposal_hamiltonian)
         accept_probability = float(np.exp(min(0.0, log_accept)))
@@ -422,6 +487,21 @@ if __name__ == "__main__":
     parser.add_argument("--burn-in", type=int, default=500)
     parser.add_argument("--n-samples", type=int, default=500)
     parser.add_argument("--n-leapfrog", type=int, default=30)
+    parser.add_argument(
+        "--map-init-steps",
+        type=int,
+        default=0,
+        help=(
+            "Adam steps on the negative log posterior before sampling. Zero "
+            "reproduces the original random-initialisation behaviour."
+        ),
+    )
+    parser.add_argument("--map-lr", type=float, default=1.0e-3)
+    parser.add_argument(
+        "--precondition",
+        action="store_true",
+        help="Use a diagonal metric from the MAP phase gradient second moments.",
+    )
     parser.add_argument("--step-size", type=float, default=1.0e-4)
     parser.add_argument("--target-accept", type=float, default=0.7)
     parser.add_argument("--thin", type=int, default=10)

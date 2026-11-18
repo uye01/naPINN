@@ -11,3 +11,6 @@ __pycache__/
 .npz
 simulation_result/
 figures/
+workshop_paper/
+paper/
+.codex/

@@ -1,0 +1,75 @@
+A short account of where the discussion has ended, since the condition the
+meta-review set -- a real example where the method makes a difference -- is also
+Reviewer 6SDM's first weakness, and most of the exchange has turned on it.
+
+**On the real example.** Our response put the evaluation on real time-resolved
+PIV from RealPDEBench Cylinder: 200 frames, 192 fixed irregular sensors, and
+1,549,400 held-out velocity vectors at locations disjoint from the training
+sensors, with only the training sensors corrupted so that evaluation is against
+an independent real measurement. At the predeclared default intensity, held-out
+rMAE is 0.574 for a plain PINN, 0.270 for LAD, 0.231 for OrPINN q=2.9 and 0.160
+for naPINN, lower on each seed individually. A predeclared 144-run matrix over
+Controlled Cylinder, FSI and Foil gives naPINN the lowest mean rMAE in all six
+conditions and the lowest mean rMSE in four, and five structured corruption
+families -- persistent drift, AR(1) correlation, spatially clustered burst
+failure -- put it lowest on both metrics in four of five. We also reported the
+conditions where it loses, and a negative result on the meta-review's second
+point: learning the Reynolds number jointly with the field under 30% drift
+leaves every method above 51% relative error, which we report as failed
+identification under combined observation and model discrepancy rather than as a
+success.
+
+No reviewer has disputed that evidence during the discussion. What they raised
+instead were the method's internals and the strength of the baselines, and we
+ran what each of them asked for.
+
+**Reviewer 6SDM** asked for real data, model mismatch, stronger baselines and an
+EMA sensitivity study. The first three are answered above and by the [31]
+comparison. For the fourth we ran the EMA sweep and, when 6XZg questioned its
+reading, extended it from three seeds to eight; we also swept the gate
+initialisation, which had never been swept and turns out to be the constructor
+default rather than a tuned choice.
+
+**Reviewer aoJS** asked for the ablation that isolates the trainable gate, which
+our existing ablations did not provide. Freezing only the gate, keeping warm-up
+and the learned residual density, raises rMAE from 0.092 / 0.082 / 0.071 to
+0.675 / 0.514 / 0.351: the frozen gate excludes 20.9-28.3% of the corrupted
+measurements against 99.3-99.4% when it is learned. On training cost, giving
+each baseline exactly naPINN's elapsed seconds lets them run 37,561 to 53,494
+updates against naPINN's 30,000, and the best of them still reaches 0.285 /
+0.190 / 0.137.
+
+**Reviewer 6XZg** raised seven points and replied to our answers, and this is
+where the discussion cost us most. They were right that our screening baselines
+all operate inside training and that we had not tested pre-processing as
+practitioners do it. We ran it -- three screens on the raw measurements, with
+thresholds tuned against the known corruption labels, so the baseline is treated
+generously -- and reported in that thread that the strongest of the three
+matches or beats naPINN on two of the three synthetic benchmarks. They were also
+right that we described an EMA sweep as showing robustness when it does not.
+
+**What we withdrew or corrected during the discussion**, all of it in the
+reviewer threads: the Related Work contrast with Bayesian UQ, which we cannot
+support and which we now describe as a complementary rather than a competing
+treatment; the word "robust" for the EMA sweep, whose ordering at eight seeds
+sits inside seed variation; the claim that our two-stage MAD comparison answered
+the pre-processing question; and the warm-up ablation, since at a matched budget
+removing warm-up is marginally better on two of three benchmarks. We also
+implemented an HMC B-PINN so as not to leave 6XZg's baseline concern unanswered,
+and could not converge it within the discussion period, so we make no claim
+against one.
+
+**What the paper will change.** [31] moves to the closest prior with the direct
+comparison in the main text; the Bayesian contrast comes out of Related Work;
+the gate initialisation, the EMA sweep with per-seed values, and the corrected
+warm-up claim go into the ablations; and the pre-processing baseline is added
+alongside the in-training screens.
+
+**What we claim.** naPINN provides an explicit, learned per-measurement
+inclusion decision, and on real PIV with injected corruption it gives the lowest
+field error among the methods we compared, consistently across scenarios and
+seeds. We do not claim general superiority over [31], we do not claim it
+recovers physical coefficients under model discrepancy, and we now know our
+synthetic benchmarks admit a stronger pre-processing baseline than the ones we
+originally reported. The real-data evidence is the part we would ask the
+reviewers to weigh, and we have tried to report the rest without selection.

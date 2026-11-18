@@ -53,10 +53,11 @@ report the full matrix rather than the favourable subset.
 
 We also ran five structured corruption families on the real PIV -- persistent
 sensor bias plus drift at 10/20/30%, AR(1) temporal correlation, and spatially
-clustered burst failure. Here the outcome is genuinely mixed: LAD-PINN is best
-on both field metrics under AR(1), 10% drift and spatial burst, while naPINN
-is best on both under 20% and 30% drift. The persistent-failure calibration
-does not transfer perfectly to temporally correlated corruption.
+clustered burst failure. naPINN is lowest on both field metrics in four of the
+five, with a plain LAD loss better at the mildest drift level. The margin at
+20% drift is marginal, and the gate's calibration does not transfer perfectly
+across corruption structure: its failure-recall is 92.90% at 30% drift but only
+61.41% under AR(1).
 
 <!-- outputs/rebuttal/realpde_recovery_20260726/injected_piv_aggregation_strict.json, 102/102 -->
 

@@ -1,0 +1,7 @@
+**W4**
+
+The second table is very unclear. These number are supposed to add to something. I imagine if you add second and third column together it should add to 100% but it is not:
+
+Should we expect: **All the Removed data = Of the outliers + Of the clean data**
+
+Also it is not completely clear the procedure you used for the pre-prossesing.

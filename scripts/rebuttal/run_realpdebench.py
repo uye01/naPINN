@@ -30,6 +30,11 @@ from pinnlab.utils.data_loss import data_loss_q_gaussian
 from pinnlab.utils.density import create_density_estimator
 from pinnlab.utils.ebm import TrainableLikelihoodGate
 from pinnlab.utils.seed import seed_everything
+from scripts.rebuttal.preprocess_screen import (
+    SCREENS,
+    compute_screen_mask,
+    screen_diagnostics,
+)
 
 NAPINN_METHODS = {"napinn", "napinn_lad", "napinn_q29"}
 STAGED_METHODS = {"pinn_ebm", *NAPINN_METHODS}
@@ -795,6 +800,39 @@ def save_checkpoint(
     torch.save(checkpoint, path)
 
 
+def apply_preprocess_screen(experiment, kind: str, k: float) -> dict[str, Any]:
+    """Drop screen-flagged sensor measurements before training.
+
+    Same rule as the synthetic runner -- the maths is shared -- but here the
+    corruption truth is the per-component mask the experiment already carries,
+    and a row counts as corrupted if either velocity component is.
+
+    Note what the neighbourhood in ``local_median`` actually contains on this
+    data. The sensors are 192 fixed locations sampled at 200 frames, so a row's
+    nearest neighbours in (x, y, t) are mostly the *same sensor at adjacent
+    frames*. That is a property of the measurement geometry, not a choice, and
+    it is why the screen behaves differently here than on the synthetic grids.
+    """
+    flagged = compute_screen_mask(
+        experiment.X_data.detach(), experiment.y_data.detach(), kind, k
+    )
+    corrupted = experiment.data_corruption_labels.any(dim=1)
+
+    diagnostics = screen_diagnostics(flagged, corrupted, kind, k)
+    keep = ~flagged
+    if int(keep.sum()) < experiment.n_data_batch:
+        raise RuntimeError(
+            f"Screen {kind} at k={k} left {int(keep.sum())} measurements, "
+            f"fewer than the data batch size {experiment.n_data_batch}"
+        )
+
+    experiment.X_data = experiment.X_data[keep]
+    experiment.y_data = experiment.y_data[keep]
+    experiment.y_data_clean = experiment.y_data_clean[keep]
+    experiment.data_corruption_labels = experiment.data_corruption_labels[keep]
+    return diagnostics
+
+
 def main(args: argparse.Namespace) -> Path:
     common = load_yaml(args.common_config)
     method_override = load_yaml(args.exp_config)
@@ -843,6 +881,17 @@ def main(args: argparse.Namespace) -> Path:
     model_config["in_features"] = int(config["in_features"])
     model_config["out_features"] = int(config["out_features"])
     experiment = get_experiment(config["experiment_name"])(config, device)
+    preprocess_diagnostics: dict[str, Any] = {}
+    if args.preprocess_screen is not None:
+        if method == MAD_METHOD:
+            raise ValueError(
+                "MAD-PINN already screens between two training stages; stacking "
+                "a pre-training screen on top would be a third baseline, not the "
+                "one reviewer 6XZg asked for"
+            )
+        preprocess_diagnostics = apply_preprocess_screen(
+            experiment, args.preprocess_screen, args.preprocess_k
+        )
     model = get_model(config["model_name"])(model_config).to(device)
 
     training = config["training"]
@@ -1204,6 +1253,7 @@ def main(args: argparse.Namespace) -> Path:
         **reynolds_metrics,
         **corruption_metrics,
         **phase_times,
+        "preprocess_screen": preprocess_diagnostics or None,
         "training_wall_sec": training_wall_sec,
         "evaluation_wall_sec": evaluation_sec,
         "end_to_end_wall_sec": time.perf_counter() - end_to_end_start,
@@ -1296,6 +1346,20 @@ def build_parser() -> argparse.ArgumentParser:
         "--stage1-checkpoint",
         type=Path,
         help=("Completed 30,000-update LAD final.pt required by MAD-PINN stage 2."),
+    )
+    parser.add_argument(
+        "--preprocess-screen",
+        choices=SCREENS,
+        help=(
+            "Screen the raw measurements statistically, drop what is flagged, "
+            "then train normally. The baseline reviewer 6XZg asked for."
+        ),
+    )
+    parser.add_argument(
+        "--preprocess-k",
+        type=float,
+        default=3.0,
+        help="Screen threshold in robust standard deviations.",
     )
     parser.add_argument(
         "--smoke-steps",
