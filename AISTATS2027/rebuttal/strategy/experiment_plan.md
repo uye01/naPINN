@@ -26,13 +26,15 @@
 
 - 브랜치 `rebuttal`을 받는다.
 - 환경 구성, 데이터 전송, 무결성 확인은 `rebuttal/CROSS_SERVER_EXPERIMENT_HANDOFF.md` 7절을 따른다.
-- 데이터 체크섬(작성 서버 기준):
+- 데이터 체크섬(작성 서버의 실제 파일에서 2026-11-18에 계산):
 
   ```text
-  ba83755bfd03115838341d757784e85d7f91854e457d5be856de26fd773d0d27  Burgers2D_3-5/data.npz
-  d046ba0f2c0c46e54c301b2c2a1c241da956d09bde70c4c9b11ee3f416bf92f6  LambdaOmega_Spiral_2/data.npz
-  0aea0fe1e85ed15ee381443106e2478cf61554c91c5969c2ab62e78d2b47c0c7  realpdebench_cylinder_10031_frames1000-1200_stride1.npz
+  fbb94e8d5872dc649b42c4883a1be4f74787df7da2ff69dc987bc904622fe4b6  Burgers2D_3-5/data.npz
+  b118276a556699080c657ef1c59adbda58fccc957e6e92380089a514216790f1  LambdaOmega_Spiral_2/data.npz
+  e2513cccae4bdd75da1bf33a85bf23bb66a2dc8350c3e951a5c3e95ebb94b1bd  realpdebench_cylinder_10031_frames1000-1200_stride1.npz
   ```
+
+  `rebuttal/CROSS_SERVER_EXPERIMENT_HANDOFF.md` 7.2절의 체크섬(2026-07-25 작성)은 이 값과 다르다. 세 파일 모두 그 뒤(2026-07-25–26)에 다시 만들어졌고, E0의 기준값은 위 파일로 얻은 것이다. 작성 서버에서 데이터를 전송받은 경우에는 함께 전송된 `DATA_SHA256SUMS.txt`로 전체 파일을 검증한다.
 
   Burgers와 λ–ω 데이터는 `pinnlab/simulation/simulation_result/` 아래에, PIV 데이터는 `analysis/results/runs/rebuttal_realpde/data/` 아래에 둔다. 실험 서버의 데이터 체크섬이 다르면 그 사실을 결과 파일에 적는다. 체크섬이 달라도 E0에 합격하면 진행할 수 있다.
 - 정적 확인:
